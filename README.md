@@ -1,4 +1,4 @@
-# AI Secretary using llms — EN / JA / KO
+# 7c - AI Secretary using llms (EN / JA / KO)
 
 A fully local, multilingual voice assistant.  
 Speak → Whisper STT → Ollama LLM → Kokoro TTS → Speaks back.  
@@ -12,7 +12,7 @@ Supports **English**, **Japanese**, and **Korean** with automatic language detec
 Microphone
     │
     ▼
-faster-whisper          (STT — auto-detects EN / JA / KO)
+faster-whisper          (STT: auto-detects EN / JA / KO)
     │
     ▼
 Ollama  ◄──────────────────────────────────────────────┐
@@ -53,7 +53,7 @@ brew install portaudio ffmpeg espeak-ng
 **Windows**
 - [PortAudio](http://www.portaudio.com/download.html)
 - [FFmpeg](https://ffmpeg.org/download.html)
-- [eSpeak-NG](https://github.com/espeak-ng/espeak-ng/releases) — download and run the `.msi` installer
+- [eSpeak-NG](https://github.com/espeak-ng/espeak-ng/releases) : download and run the `.msi` installer
 
 ### Ollama
 
@@ -96,7 +96,7 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 3. Japanese support — UniDic dictionary
+### 3. Japanese support
 
 Japanese G2P (grapheme-to-phoneme) requires `fugashi` and the UniDic dictionary.  
 `fugashi[unidic]` installs the package but the dictionary data must be downloaded separately:
@@ -106,7 +106,7 @@ pip install 'fugashi[unidic]'
 python -m unidic download
 ```
 
-> **Note:** The full UniDic 3.1.0 is ~770 MB on disk. If you prefer a smaller footprint and don't need the latest dictionary data, use `unidic-lite` (~250 MB) instead — no download step required:
+> **Note:** The full UniDic 3.1.0 is ~770 MB on disk. If you prefer a smaller footprint and don't need the latest dictionary data, use `unidic-lite` (~250 MB) instead, no download step required:
 > ```bash
 > pip install 'fugashi[unidic-lite]'
 > ```
@@ -121,9 +121,9 @@ cp .env.example .env
 
 Open `.env` and adjust any values you want to change. At minimum, set:
 
-- `OLLAMA_MODEL` — the model you pulled
-- `DEFAULT_CITY` — your city for default weather lookups
-- `DEFAULT_LAT` / `DEFAULT_LON` — your coordinates
+- `OLLAMA_MODEL` = the model you pulled
+- `DEFAULT_CITY` = your city for default weather lookups
+- `DEFAULT_LAT` / `DEFAULT_LON` = your coordinates
 
 The assistant runs fine with all defaults if you just want to try it quickly.
 
@@ -150,7 +150,7 @@ python assistant.py --whisper medium
 
 ## Configuration reference
 
-All settings live in `.env`. The file is never to be committed — see `.gitignore`.
+All settings live in `.env`. The file is never to be committed (see `.gitignore`).
 
 | Variable | Default | Description |
 |---|---|---|
@@ -185,9 +185,9 @@ print(list(p.voices))
 
 The assistant has two built-in agents:
 
-**`get_weather`** — fetches current conditions and a 3-day forecast from [Open-Meteo](https://open-meteo.com/) (free, no API key). Only called when you explicitly ask about weather.
+**`get_weather`**: fetches current conditions and a 3-day forecast from [Open-Meteo](https://open-meteo.com/) (free, no API key). Only called when you explicitly ask about weather.
 
-**`web_search`** — queries DuckDuckGo via the `ddgs` library (no API key). Always available; the model calls it when a query requires current or uncertain information.
+**`web_search`**: queries DuckDuckGo via the `ddgs` library (no API key). Always available; the model calls it when a query requires current or uncertain information.
 
 ---
 
@@ -210,11 +210,11 @@ Decrease `VAD_MIN_SPEECH_SECS` (e.g. `0.2`).
 Switch to `WHISPER_MODEL=small` or `medium`.
 
 **Tool calls not working (model ignores web_search)**  
-Small models like `gemma4:e2b` or `llama3.2:3b` don't invoke tools too reliably. Try `qwen3.5:4b` or `gemma4:e4b` — they handle tool calling more consistently.
+Small models like `gemma4:e2b` or `llama3.2:3b` don't invoke tools too reliably. Try `qwen3.5:4b` or `gemma4:e4b` as they handle tool calling more consistently.
 
 **`fugashi` import error on Japanese speech**  
 Make sure you ran `python -m unidic download` after installing `fugashi[unidic]`.  
-If you skipped this, run it now — it downloads ~770 MB from AWS S3.
+If you skipped this, run it now. It downloads ~770 MB from AWS S3.
 
 **Kokoro TTS produces no audio**  
 Verify `espeak-ng` is installed (`espeak-ng --version`). Kokoro uses it as a fallback for unknown phoneme sequences.
@@ -224,7 +224,7 @@ Verify `espeak-ng` is installed (`espeak-ng --version`). Kokoro uses it as a fal
 ## Security notes
 
 - `.env` is excluded from git via `.gitignore`. Never commit it.
-- Ollama runs on `localhost` only by default — do not expose port 11434 publicly.
+- Ollama runs on `localhost` only by default. Do not expose port 11434 publicly.
 - Web search results are passed to the LLM without additional sanitization. Don't run this in an untrusted network environment.
 
 ---

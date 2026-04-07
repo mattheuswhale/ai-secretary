@@ -19,16 +19,10 @@ import struct
 import wave
 import io
 from pathlib import Path
+from mcp_host import MCPHostSync
 
 import numpy as np
 import sounddevice as sd
-
-# ── Config (.env) ────────────────────────────────────────────────────────
-try:
-    from dotenv import load_dotenv
-    load_dotenv()
-except ImportError:
-    pass  # python-dotenv optional; falls back to hardcoded defaults
 
 # ── STT ─────────────────────────────────────────────────────────────────
 from faster_whisper import WhisperModel
@@ -41,9 +35,9 @@ from kokoro import KPipeline
 # Note: soundfile is no longer required — Kokoro returns numpy arrays directly.
 
 # ═══════════════════════════════════════════════════════════════════════
-# CONFIG  (values loaded from .env, with hardcoded fallbacks)
+# CONFIG
 # ═══════════════════════════════════════════════════════════════════════
-SAMPLE_RATE       = 16_000   # Hz — fixed; Whisper requires 16 kHz
+SAMPLE_RATE       = 16_000   # Hz — Whisper expects 16 kHz
 CHANNELS          = 1
 BLOCK_SIZE        = 1024
 
@@ -59,7 +53,7 @@ WHISPER_DEVICE  = os.getenv("WHISPER_DEVICE",  "cpu")
 WHISPER_COMPUTE = os.getenv("WHISPER_COMPUTE", "int8")
 
 OLLAMA_URL   = os.getenv("OLLAMA_URL",   "http://localhost:11434/api/chat")
-OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "gemma4:e2b")
+OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3.2:3b")
 
 # Kokoro KPipeline lang_code map
 # 'a' = American English, 'j' = Japanese (requires: pip install misaki[ja] + espeak-ng)
@@ -76,7 +70,8 @@ GEO_API     = "https://geocoding-api.open-meteo.com/v1/search"
 
 DEFAULT_LAT  = float(os.getenv("DEFAULT_LAT",  "51.4778"))
 DEFAULT_LON  = float(os.getenv("DEFAULT_LON",  "0.0015"))
-DEFAULT_CITY =       os.getenv("DEFAULT_CITY", "Greenwich")
+DEFAULT_CITY =       os.getenv("DEFAULT_CITY", "GREENWICH")
+
 
 # ═══════════════════════════════════════════════════════════════════════
 # WEATHER AGENT
@@ -476,9 +471,10 @@ class LLMAgent:
     # Cap history to last N turns to prevent memory leak and context bloat
     MAX_HISTORY_TURNS = 20
 
-    def __init__(self, ollama_model: str = OLLAMA_MODEL):
+    def __init__(self, ollama_model: str = OLLAMA_MODEL, mcp_host: "MCPHostSync | None" = None):
         self.ollama_model = ollama_model
         self.history: list[dict] = []
+        self._mcp = mcp_host
 
     def chat(self, user_text: str) -> str:
         # Warn on suspicious prompt-injection patterns in transcribed text
@@ -495,9 +491,15 @@ class LLMAgent:
         # - web_search: always available; the system prompt + model decides when to call it.
         #   Keeping it in the payload at all times aligns with the aggressive search policy
         #   in the system prompt and avoids a keyword gate silently blocking searches.
+
+        # Built-in tools
         tools = [TOOLS_SPEC[1]]  # web_search always available
         if _WEATHER_KEYWORDS.search(user_text):
-            tools.insert(0, TOOLS_SPEC[0])  # get_weather prepended on weather queries
+            tools.insert(0, TOOLS_SPEC[0])  # get_weather on weather queries
+
+        # MCP agent tools (documents, rss, code, …)
+        if self._mcp:
+            tools.extend(self._mcp.get_ollama_tools())
 
         now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
@@ -550,6 +552,8 @@ class LLMAgent:
                         result = weather_tool_call(fn_args)
                     elif fn_name == "web_search":
                         result = web_search_tool_call(fn_args)
+                    elif self._mcp and fn_name in self._mcp.list_tools():
+                        result = self._mcp.call_tool(fn_name, fn_args)
                     else:
                         result = json.dumps({"error": f"unknown tool {fn_name}"})
 
@@ -660,9 +664,13 @@ def main():
                         help="Whisper model size")
     args = parser.parse_args()
 
+
+    mcp_host = MCPHostSync()
+    mcp_host.start()                          # spawns server subprocesses
+
     # Parse args BEFORE constructing objects so CLI values take effect
     listener = SpeechListener(whisper_model=args.whisper)
-    agent    = LLMAgent(ollama_model=args.model)
+    agent    = LLMAgent(ollama_model=args.model, mcp_host=mcp_host)
     speaker  = Speaker(no_tts=args.no_tts)
 
     listener.calibrate()
@@ -699,6 +707,7 @@ def main():
             print(f"[error] {e}")
             time.sleep(1)
 
+    mcp_host.stop()
 
 if __name__ == "__main__":
     main()

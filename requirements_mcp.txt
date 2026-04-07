@@ -1,0 +1,12 @@
+# MCP agent system additional dependencies
+# Install alongside the main requirements.txt:
+#   pip install -r requirements.txt
+#   pip install -r requirements_mcp.txt
+
+# MCP SDK (Python) -> use 1.23.0+ for CVE-2025-66416 DNS-rebinding fix.
+# NOTE: This fix applies to HTTP transport. We use stdio only, which is
+# unaffected, but pinning to the patched version is good hygiene.
+mcp>=1.23.0
+
+# RSS agent
+requests>=2.32.4   # already in requirements.txt — listed here for clarity
