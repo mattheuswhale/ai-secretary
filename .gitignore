@@ -1,0 +1,48 @@
+# ── Environment & secrets ────────────────────────────────────────────────
+.env
+
+# ── Python virtual environments ──────────────────────────────────────────
+venv/
+.venv/
+env/
+.env/
+ENV/
+virtualenv/
+
+# ── Python cache ─────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+
+# ── Distribution / packaging ─────────────────────────────────────────────
+dist/
+build/
+*.egg-info/
+*.egg
+wheels/
+
+# ── Model cache (large binary files) ─────────────────────────────────────
+# Whisper / CTranslate2 model weights
+models/
+*.bin
+*.onnx
+*.ct2
+
+# ── OS cruft ─────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── Editor / IDE ─────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ── Logs & temp audio ────────────────────────────────────────────────────
+*.log
+*.wav
+*.mp3

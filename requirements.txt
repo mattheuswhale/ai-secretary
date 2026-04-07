@@ -1,0 +1,44 @@
+# Voice Assistant — Python dependencies
+# Install with: pip install -r requirements.txt
+
+# ── Config ────────────────────────────────────────────────────────────────
+python-dotenv>=1.0.0
+
+# ── Speech-to-Text ────────────────────────────────────────────────────────
+faster-whisper>=1.0.0
+
+# ── Audio I/O ─────────────────────────────────────────────────────────────
+sounddevice>=0.4.6
+numpy>=1.24.0
+
+# ── TTS — Kokoro (hexgrad/kokoro) ─────────────────────────────────────────
+# EN and KO work out of the box.
+# Japanese requires misaki[ja] and the system espeak-ng package:
+#
+#   pip install misaki[ja]
+#
+#   Linux:   sudo apt install espeak-ng
+#   macOS:   brew install espeak-ng
+#   Windows: https://github.com/espeak-ng/espeak-ng/releases
+#
+# Japanese G2P also uses fugashi + UniDic. The full UniDic (770 MB) needs a
+# separate download after pip install:
+#
+#   pip install 'fugashi[unidic]'
+#   python -m unidic download
+#
+# If you prefer a lighter install (~250 MB, slightly older dictionary):
+#   pip install 'fugashi[unidic-lite]'   # no download step needed
+#
+kokoro>=0.9.4
+pyopenjtalk
+fugashi[unidic]
+jaconv
+mojimoji
+
+# ── Web search (no API key required) ──────────────────────────────────────
+ddgs
+
+# ── HTTP (weather agent + Ollama) ─────────────────────────────────────────
+# NOTE: CVE-2024-47081 (.netrc credential leak) fixed in 2.32.4 — do not lower this pin
+requests>=2.32.4
