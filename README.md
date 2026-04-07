@@ -1,4 +1,4 @@
-# 🎙️ Voice Assistant — EN / JA / KO
+# AI Secretary using llms — EN / JA / KO
 
 A fully local, multilingual voice assistant.  
 Speak → Whisper STT → Ollama LLM → Kokoro TTS → Speaks back.  
@@ -16,7 +16,7 @@ faster-whisper          (STT — auto-detects EN / JA / KO)
     │
     ▼
 Ollama  ◄──────────────────────────────────────────────┐
-(gemma4:e2b)                                          │
+(gemma4:e2b)                                           │
     │                                                  │
     ├──► get_weather tool ──► Open-Meteo API           │
     │    (on explicit weather questions only)          │
@@ -78,7 +78,7 @@ ollama pull gemma4:e2b     # good balance
 ### 1. Clone and create a virtual environment
 
 ```bash
-git clone <your-repo-url>
+git clone git@github.com:mattheuswhale/ai-secretary.git
 cd voice-assistant
 
 python -m venv .venv
