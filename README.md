@@ -1,4 +1,4 @@
-# 7c - AI Secretary using llms (EN / JA / KO)
+# QueryCraft - AI Secretary using llms (EN / JA / KO)
 
 A fully local, multilingual voice assistant.  
 Speak → Whisper STT → Ollama LLM → Kokoro TTS → Speaks back.  
