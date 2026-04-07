@@ -1,0 +1,33 @@
+{
+  "_comment": "MCP server registry. Set enabled=true to activate a server.",
+  "servers": [
+    {
+      "name": "documents",
+      "command": "python",
+      "args": ["agents/documents_agent.py"],
+      "env": {
+         "DOCUMENTS_ROOT":"~/Documents"
+      },
+      "enabled": true
+    },
+    {
+      "name": "rss",
+      "command": "python",
+      "args": ["agents/rss_agent.py"],
+      "env": {
+         "FRESHRSS_URL" : "http://localhost:freshrss",
+         "FRESHRSS_USER" : "user",
+         "FRESHRSS_API_KEY" : "password"
+      },
+      "enabled": false
+    },
+    {
+      "name": "code",
+      "command": "python",
+      "args": ["agents/code_agent.py"],
+      "env": {},
+      "enabled": false,
+      "_comment": "Copy agent_template.py to code_agent.py and implement tools"
+    }
+  ]
+}

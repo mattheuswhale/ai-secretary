@@ -22,6 +22,7 @@ build/
 *.egg-info/
 *.egg
 wheels/
+.json
 
 # ── Model cache (large binary files) ─────────────────────────────────────
 # Whisper / CTranslate2 model weights
